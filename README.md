@@ -8,6 +8,8 @@ The brief: design on-site recommenders for [venezia.pl](https://www.venezia.pl/)
 
 You can also open [`index.html`](index.html) locally. No build step.
 
+The assignment mock uses made-up paths such as `/brazowe-sztyblety-damskie-v102-11003-03`. Magento on venezia.pl turns an unknown URL into a search results page. The demo maps those slugs to live product pages so a click opens a PDP, not „Wyniki wyszukiwania”. Mock image URLs (`/img/11001.jpg`) are also fictional, so the placeholder is expected unless a real `image_link` is in the API response.
+
 Docs used:
 
 - [Reference models](https://docs.luigisbox.com/recommendations/models/)
