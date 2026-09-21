@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Venezia.pl — You may also like</title>
+    <style>
+      :root {
+        --ink: #1a1a1a;
+        --muted: #6b6b6b;
+        --line: #e6e6e6;
+        --bg: #f7f5f2;
+        --card: #ffffff;
+        --sale: #b42318;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      .page {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+      }
+
+      .page-kicker {
+        font-family: system-ui, sans-serif;
+        font-size: 0.72rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 0.5rem;
+      }
+
+      h1 {
+        font-weight: 500;
+        font-size: 1.75rem;
+        margin: 0 0 1.75rem;
+      }
+
+      #lbx-recommender {
+        width: 100%;
+      }
+
+      .lbx-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1.25rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .lbx-card {
+        display: flex;
+        flex-direction: column;
+        background: var(--card);
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--line);
+      }
+
+      .lbx-card:hover,
+      .lbx-card:focus-visible {
+        border-color: var(--ink);
+      }
+
+      .lbx-image-wrap {
+        position: relative;
+        aspect-ratio: 3 / 4;
+        background: #eeeae4;
+        overflow: hidden;
+      }
+
+      .lbx-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .lbx-labels {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+      }
+
+      .lbx-badge {
+        font-family: system-ui, sans-serif;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.4rem;
+        background: var(--ink);
+        color: #fff;
+      }
+
+      .lbx-badge-sale {
+        background: var(--sale);
+      }
+
+      .lbx-details {
+        padding: 0.85rem 0.75rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        flex-grow: 1;
+      }
+
+      .lbx-title {
+        font-size: 0.92rem;
+        font-weight: 400;
+        line-height: 1.35;
+        margin: 0;
+      }
+
+      .lbx-price {
+        font-family: system-ui, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <p class="page-kicker">Luigi's Box · Task 3</p>
+      <h1>Może Ci się spodobać</h1>
+      <div id="lbx-recommender"></div>
+    </div>
+
+    <script>
+      var SITE_ORIGIN = "https://www.venezia.pl";
+      var PLACEHOLDER_SRC =
+        "data:image/svg+xml," +
+        encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400">' +
+            '<rect width="300" height="400" fill="#eeeae4"/>' +
+            '<text x="150" y="200" text-anchor="middle" fill="#8a857d" font-family="system-ui,sans-serif" font-size="14">Brak zdjęcia</text>' +
+            "</svg>"
+        );
+
+      var LABEL_COPY = {
+        is_new: "Nowość",
+        is_sale: "Promocja",
+      };
+
+      function productHref(url) {
+        if (!url) return SITE_ORIGIN;
+        if (/^https?:\/\//i.test(url)) return url;
+        return SITE_ORIGIN + (url.charAt(0) === "/" ? url : "/" + url);
+      }
+
+      function renderLuigisBoxRecommendations(apiResponse) {
+        var container = document.getElementById("lbx-recommender");
+        if (!container) return;
+
+        var hits =
+          Array.isArray(apiResponse) &&
+          apiResponse[0] &&
+          Array.isArray(apiResponse[0].hits)
+            ? apiResponse[0].hits
+            : [];
+
+        container.replaceChildren();
+
+        if (!hits.length) {
+          container.hidden = true;
+          return;
+        }
+
+        container.hidden = false;
+
+        var grid = document.createElement("div");
+        grid.className = "lbx-grid";
+
+        hits.forEach(function (hit) {
+          var attrs = hit.attributes || {};
+          var title = attrs.title || "Produkt";
+          var price = attrs.price || "";
+          var labels = Array.isArray(attrs.labels) ? attrs.labels : [];
+          var imageLink =
+            typeof attrs.image_link === "string" ? attrs.image_link.trim() : "";
+
+          var card = document.createElement("a");
+          card.className = "lbx-card";
+          card.href = productHref(hit.url);
+          card.setAttribute("aria-label", title);
+
+          var imageWrap = document.createElement("div");
+          imageWrap.className = "lbx-image-wrap";
+
+          if (labels.length) {
+            var labelRow = document.createElement("div");
+            labelRow.className = "lbx-labels";
+            labels.forEach(function (label) {
+              var badge = document.createElement("span");
+              badge.className = "lbx-badge";
+              if (label === "is_sale") badge.classList.add("lbx-badge-sale");
+              badge.textContent = LABEL_COPY[label] || label;
+              labelRow.appendChild(badge);
+            });
+            imageWrap.appendChild(labelRow);
+          }
+
+          var img = document.createElement("img");
+          img.className = "lbx-image";
+          img.alt = title;
+          img.loading = "lazy";
+          img.decoding = "async";
+          img.src = imageLink || PLACEHOLDER_SRC;
+          img.addEventListener("error", function onImgError() {
+            img.removeEventListener("error", onImgError);
+            img.src = PLACEHOLDER_SRC;
+          });
+          imageWrap.appendChild(img);
+          card.appendChild(imageWrap);
+
+          var details = document.createElement("div");
+          details.className = "lbx-details";
+
+          var titleEl = document.createElement("h2");
+          titleEl.className = "lbx-title";
+          titleEl.textContent = title;
+
+          var priceEl = document.createElement("p");
+          priceEl.className = "lbx-price";
+          priceEl.textContent = price;
+
+          details.appendChild(titleEl);
+          details.appendChild(priceEl);
+          card.appendChild(details);
+          grid.appendChild(card);
+        });
+
+        container.appendChild(grid);
+      }
+
+      var mockApiResponse = [
+        {
+          recommendation_type: "item_detail_alternatives",
+          hits: [
+            {
+              url: "/czarne-skorzane-botki-damskie-v100-11001-01",
+              attributes: {
+                title: "Czarne skórzane botki damskie",
+                price: "349.00 PLN",
+                labels: ["is_new"],
+                image_link: "https://www.venezia.pl/img/11001.jpg",
+              },
+            },
+            {
+              url: "/bezowe-zamszowe-kozaki-damskie-v101-11002-02",
+              attributes: {
+                title: "Beżowe zamszowe kozaki damskie",
+                price: "459.00 PLN",
+                labels: [],
+              },
+            },
+            {
+              url: "/brazowe-sztyblety-damskie-v102-11003-03",
+              attributes: {
+                title: "Brązowe sztyblety damskie",
+                price: "399.00 PLN",
+                labels: ["is_sale"],
+                image_link: "https://www.venezia.pl/img/11003.jpg",
+              },
+            },
+            {
+              url: "/czarne-kozaki-za-kolano-v103-11004-04",
+              attributes: {
+                title: "Czarne kozaki za kolano",
+                price: "529.00 PLN",
+                labels: [],
+                image_link: "https://www.venezia.pl/img/11004.jpg",
+              },
+            },
+            {
+              url: "/szare-zamszowe-botki-na-obcasie-v104-11005-05",
+              attributes: {
+                title: "Szare zamszowe botki na obcasie",
+                price: "379.00 PLN",
+                labels: ["is_new", "is_sale"],
+                image_link: "https://www.venezia.pl/img/11005.jpg",
+              },
+            },
+            {
+              url: "/bordowe-botki-damskie-skorzane-v105-11006-06",
+              attributes: {
+                title: "Bordowe botki damskie skórzane",
+                price: "319.00 PLN",
+                labels: [],
+                image_link: "https://www.venezia.pl/img/11006.jpg",
+              },
+            },
+          ],
+        },
+      ];
+
+      renderLuigisBoxRecommendations(mockApiResponse);
+    </script>
+  </body>
+</html>
