@@ -127,7 +127,7 @@ Vanilla HTML / CSS / JS in [`index.html`](index.html). No React — recommendati
 - Text goes through `textContent` so API strings are not interpreted as HTML
 - Empty `hits` hides the container
 
-The Task 3 payload uses made-up paths such as `/brazowe-sztyblety-damskie-v102-11003-03`. Magento on venezia.pl treats an unknown URL as a search query, so a raw click would land on „Wyniki wyszukiwania”. The demo maps those slugs to live product pages. Assignment image URLs (`/img/11001.jpg`) are also fictional, so the placeholder is expected until the API returns a real `image_link`.
+The Task 3 payload uses made-up paths such as `/brazowe-sztyblety-damskie-v102-11003-03`. Magento on venezia.pl treats an unknown URL as a search query, so a raw click would land on „Wyniki wyszukiwania”. The demo maps those slugs to live product pages and uses the matching catalog images. Product 2 still has no `image_link`, so the placeholder is shown as the bonus case.
 
 Production still needs `view_item_list` and `select_item` (dataLayer or Events API). Without those events the models cannot learn. This snippet only covers rendering, which is what Task 3 asked for.
 
