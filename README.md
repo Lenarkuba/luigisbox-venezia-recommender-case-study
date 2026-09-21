@@ -8,8 +8,6 @@ The brief: design on-site recommenders for [venezia.pl](https://www.venezia.pl/)
 
 You can also open [`index.html`](index.html) locally. No build step.
 
-The assignment mock uses made-up paths such as `/brazowe-sztyblety-damskie-v102-11003-03`. Magento on venezia.pl turns an unknown URL into a search results page. The demo maps those slugs to live product pages so a click opens a PDP, not „Wyniki wyszukiwania”. Mock image URLs (`/img/11001.jpg`) are also fictional, so the placeholder is expected unless a real `image_link` is in the API response.
-
 Docs used:
 
 - [Reference models](https://docs.luigisbox.com/recommendations/models/)
@@ -28,7 +26,7 @@ Docs used:
 | Homepage | Personalized return visit | `user_click_based` |
 | Homepage, new visitor | Avoid an empty box | `trends` (fallback) |
 
-`item_detail_alternatives` is the upsell model: similar products, preferring slightly more expensive ones. Complements add cheaper extras (suede care, insoles, a bag). On the basket page the whole cart matters, so `basket` — not `basket_popup`, which is the add-to-cart overlay. Returning homepage visitors need browsing history (`user_click_based`); cold start uses `trends`.
+`item_detail_alternatives` is the upsell model: similar products, preferring slightly more expensive ones. Complements add cheaper extras (suede care, insoles, a bag). On the basket page the whole cart matters, so the model is `basket`. Returning homepage visitors need browsing history (`user_click_based`); cold start uses `trends`.
 
 ---
 
@@ -91,7 +89,7 @@ curl -X POST "https://live.luigisbox.com/v1/recommend?tracker_id=179075-204259" 
     },
     {
       "recommendation_type": "last_seen",
-      "recommender_client_identifier": "pdp_recently_viewed",
+      "recommender_client_identifier": "pdp_last_seen",
       "item_ids": [],
       "size": 6,
       "user_id": "LB_USER_ID",
@@ -103,7 +101,7 @@ curl -X POST "https://live.luigisbox.com/v1/recommend?tracker_id=179075-204259" 
 | Parameter | Why it is there |
 | --- | --- |
 | `tracker_id` | Public site id in the query string. This endpoint is unauthenticated. |
-| `recommendation_type` | Model name. Recently visited is `last_seen`, not `recently_viewed`. |
+| `recommendation_type` | Model to run. The second widget uses `last_seen` (Recently visited). |
 | `recommender_client_identifier` | Widget name for analytics. Distinct from the model name. |
 | `item_ids` | Catalog identity of the PDP product. Must match the feed and analytics. |
 | `size` | Six cards, as requested. |
@@ -125,11 +123,11 @@ Vanilla HTML / CSS / JS in [`index.html`](index.html). No React — recommendati
 - Each hit is a clickable card: image, labels, title, price
 - Relative URLs are prefixed with `https://www.venezia.pl`
 - `is_new` → Nowość, `is_sale` → Promocja
-- Missing `image_link` (second mock product) uses an SVG placeholder; broken URLs do the same via `onerror`
+- Missing `image_link` uses an SVG placeholder; broken URLs do the same via `onerror`
 - Text goes through `textContent` so API strings are not interpreted as HTML
 - Empty `hits` hides the container
 
-The assignment images (`/img/11001.jpg` etc.) are mock URLs, so they 404 and fall back to the placeholder. That is expected.
+The Task 3 payload uses made-up paths such as `/brazowe-sztyblety-damskie-v102-11003-03`. Magento on venezia.pl treats an unknown URL as a search query, so a raw click would land on „Wyniki wyszukiwania”. The demo maps those slugs to live product pages. Assignment image URLs (`/img/11001.jpg`) are also fictional, so the placeholder is expected until the API returns a real `image_link`.
 
 Production still needs `view_item_list` and `select_item` (dataLayer or Events API). Without those events the models cannot learn. This snippet only covers rendering, which is what Task 3 asked for.
 
