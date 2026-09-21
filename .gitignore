@@ -1,10 +1,13 @@
+# Operating System files
 .DS_Store
 Thumbs.db
 desktop.ini
-.cursor/
-*.log
 
-# Local working notes, not part of the submission
-SOLUTION.md
-Case_study_task.md
-Tenatative_solution.md
+# IDE & Editor files
+.cursor/
+.vscode/
+.idea/
+
+# Logs & temporary files
+*.log
+*.tmp
