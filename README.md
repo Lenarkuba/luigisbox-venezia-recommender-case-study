@@ -44,7 +44,7 @@ Boks „Może Ci się spodobać” (`item_detail_alternatives`) pokazuje podobne
 
 **2. Koszyk — zachęta do dodatków**  
 Model: `basket`  
-Na stronie koszyka nie pokazujemy kolejnych par butów — to odciąga od kasy. Model `basket` patrzy na cały koszyk i proponuje uzupełnienia do całego zamówienia, zwykle tańsze. To jest właściwe miejsce na add-on, nie na zamiennik. (Popup po dodaniu do koszyka to osobny model `basket_popup`; tu prosimy o stronę koszyka.)
+Na stronie koszyka nie pokazujemy kolejnych par butów — to odciąga od kasy. Model `basket` patrzy na cały koszyk i proponuje uzupełnienia do całego zamówienia, zwykle tańsze. To jest właściwe miejsce na add-on, nie na zamiennik.
 
 **3. Strona główna — spersonalizowany powrót**  
 Model: `user_click_based`  
