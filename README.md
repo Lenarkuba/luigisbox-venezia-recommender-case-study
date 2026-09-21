@@ -4,7 +4,9 @@ Technical assignment for the **Integrations Consultant / Solutions Engineer** ro
 
 The brief: design on-site recommenders for [venezia.pl](https://www.venezia.pl/) — model choice, a Recommender API request, and a frontend widget.
 
-Open [`index.html`](index.html) in a browser for the Task 3 demo. No build step.
+**Live widget:** [lenarkuba.github.io/luigisbox-venezia-recommender-case-study](https://lenarkuba.github.io/luigisbox-venezia-recommender-case-study/)
+
+You can also open [`index.html`](index.html) locally. No build step.
 
 Docs used:
 
